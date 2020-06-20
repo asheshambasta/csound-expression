@@ -29,7 +29,7 @@ module Csound.Air.Live (
 
     -- * Live row
     LiveClip(..), ClipParam(..),
-    liveRow, liveRows
+    -- liveRow, liveRows
 ) where
 
 import Control.Monad
@@ -499,21 +499,21 @@ fromMonoFx f = \asig2 -> bindSig (return . f) asig2
 -- * @barLength@ - length of the bar in quater notes. So 4 means 4/4
 --
 -- * @clipIndex@ - identity of the clip to launch on the next bar.
-liveRow :: [LiveClip] -> D -> D -> Sig -> Sig
-liveRow clips iBpm iBeatDur kUserIndex = P.liveRow iTabSize iTabs iBpm iBeatDur kUserIndex iAuxParams
-    where
-        iTabSize = int $ length clips
-        iTabs = tabList $ fmap (wavLeft . liveClipFile) clips
-        iAuxParams = getAuxClipParams clips
+-- liveRow :: [LiveClip] -> D -> D -> Sig -> Sig
+-- liveRow clips iBpm iBeatDur kUserIndex = P.liveRow iTabSize iTabs iBpm iBeatDur kUserIndex iAuxParams
+--     where
+--         iTabSize = int $ length clips
+--         iTabs = tabList $ fmap (wavLeft . liveClipFile) clips
+--         iAuxParams = getAuxClipParams clips
 
--- | Stereo version of liveRow
-liveRows :: [LiveClip] -> D -> D -> Sig -> Sig2
-liveRows clips iBpm iBeatDur kUserIndex = P.liveRows iTabSize iLeftTabs iRightTabs iBpm iBeatDur kUserIndex iAuxParams
-    where
-        iTabSize = int $ length clips
-        iLeftTabs  = tabList $ fmap (wavLeft  . liveClipFile) clips
-        iRightTabs = tabList $ fmap (wavRight . liveClipFile) clips
-        iAuxParams = getAuxClipParams clips
+-- -- | Stereo version of liveRow
+-- liveRows :: [LiveClip] -> D -> D -> Sig -> Sig2
+-- liveRows clips iBpm iBeatDur kUserIndex = P.liveRows iTabSize iLeftTabs iRightTabs iBpm iBeatDur kUserIndex iAuxParams
+--     where
+--         iTabSize = int $ length clips
+--         iLeftTabs  = tabList $ fmap (wavLeft  . liveClipFile) clips
+--         iRightTabs = tabList $ fmap (wavRight . liveClipFile) clips
+--         iAuxParams = getAuxClipParams clips
 
 -- | Clip and it's parameters
 data LiveClip = LiveClip
