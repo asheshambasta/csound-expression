@@ -4,7 +4,8 @@ module Csound.Options(
     -- * Shortcuts
     setDur,
     setRates, setBufs, setGain,
-    setJack, setAlsa, setCoreAudio, setMme,
+    setRates', setBufs',
+    setJack, setJacko, setAlsa, setCoreAudio, setMme,
     setOutput, setInput,
     setDac, setAdc, setDacBy, setAdcBy, setThru,
     setSilent, setMidiDevice, setMa,
@@ -37,28 +38,38 @@ module Csound.Options(
     Config(..)
 ) where
 
-import Data.Monoid
-import Data.Default
-import Csound.Typed
+import           Csound.Typed
+import           Data.Default
 
 -- | Sets sample rate and block size
 --
 -- > setRates sampleRate blockSize
-setRates :: Int -> Int -> Options
-setRates sampleRate blockSize = def
+setRates
+  :: Int -- ^ Sample rate
+  -> Int -- ^ Blocksize
+  -> Options
+setRates sampleRate blockSize = setRates' sampleRate blockSize def
+
+-- | Set rates to existing options
+setRates' :: Int -> Int -> Options -> Options
+setRates' sampleRate blockSize opts = opts
     { csdSampleRate = Just sampleRate
-    , csdBlockSize  = Just blockSize }
+    , csdBlockSize  = Just blockSize
+    }
 
 -- | Sets hardware and software buffers.
 --
 -- > setBufs hardwareBuf ioBuf
 setBufs :: Int -> Int -> Options
-setBufs hw io = def { csdFlags = def { config = def { hwBuf = Just hw, ioBuf = Just io } } }
+setBufs hw io = setBufs' hw io def
+
+setBufs' :: Int -> Int -> Options -> Options
+setBufs' hw io opts = opts { csdFlags = def { config = def { hwBuf = Just hw, ioBuf = Just io } } }
 
 -- | Sets the default gain for the output signal (should be in range 0 to 1).
 setGain :: Double -> Options
 setGain d = def { csdGain = Just d' }
-    where d' = max 0 $ min 1 $ d
+    where d' = max 0 . min 1 $ d
 
 -- | Runs as JACK unit with given name (first argument).
 setJack :: String -> Options
@@ -73,15 +84,15 @@ setJacko jackoSpec = def { csdJacko = Just jackoSpec }
 
 -- | Sets real-time driver to Core Audio (use on OSX).
 setCoreAudio :: Options
-setCoreAudio = def { csdFlags = def { rtaudio = Just $ CoreAudio } }
+setCoreAudio = def { csdFlags = def { rtaudio = Just CoreAudio } }
 
 -- | Sets real-time driver to Alsa (use on Linux).
 setAlsa :: Options
-setAlsa = def { csdFlags = def { rtaudio = Just $ Alsa } }
+setAlsa = def { csdFlags = def { rtaudio = Just Alsa } }
 
 -- | Sets real-time driver to Mme (use on Windows).
 setMme :: Options
-setMme = def { csdFlags = def { rtaudio = Just $ Mme } }
+setMme = def { csdFlags = def { rtaudio = Just Mme } }
 
 -- | Sends output to speakers.
 setDac :: Options
